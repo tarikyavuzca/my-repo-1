@@ -1,14 +1,14 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: |
-  CloudFormation template to deploy the Kittens Carousel web application
-# Parameters:
+  CloudFormation template to deploy the Kittens Carousel web application  
+# Parameters: 
 Resources:
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enable HTTP and SSH for webserver
       GroupName: WebserverSecGrp
-      SecurityGroupIngress:
+      SecurityGroupIngress: 
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
@@ -24,32 +24,25 @@ Resources:
       ImageId: ami-0b5eea76982371e91
       InstanceType: t2.micro
       KeyName: firstkey
-      SecurityGroupIds:
-        - ! Ref WebServerSecurityGroup
-      Tags:
+      SecurityGroupIds: 
+        - !Ref WebServerSecurityGroup
+      Tags: 
         - Key: Name
-          Value: WebServer-Static
+          Value: WebServer-YTD
       UserData:
         Fn::Base64:
         |
-          #!/bin/bash
-          sudo yum update -y
-          sudo yum update httpd -y
+          #!/bin/bash -x
+          yum update -y
+          yum install httpd -y
           cd /var/www/html
-
-          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/index.html
-          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat0.jpg
-          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat1.jpg
-          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat2.jpg
-          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat3.png
-
+          FOLDER="https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/"
+          wget ${FOLDER}index.html
+          wget ${FOLDER}cat0.jpg
+          wget ${FOLDER}cat1.jpg
+          wget ${FOLDER}cat2.jpg
+          wget ${FOLDER}cat3.png
           systemctl start httpd
           systemctl enable httpd
-          
-
-
-
 
 # Outputs:
-
-
