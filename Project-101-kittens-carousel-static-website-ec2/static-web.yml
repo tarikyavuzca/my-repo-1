@@ -18,7 +18,7 @@ Resources:
           ToPort: 80
           CidrIp: 0.0.0.0/0
 
-  WebServer(EC2):
+  WebServer:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: ami-0b5eea76982371e91
@@ -35,6 +35,21 @@ Resources:
           #!/bin/bash
           sudo yum update -y
           sudo yum update httpd -y
+          cd /var/www/html
+
+          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/index.html
+          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat0.jpg
+          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat1.jpg
+          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat2.jpg
+          wget https://raw.githubusercontent.com/tarikyavuzca/my-repo-1/main/Project-101-kittens-carousel-static-website-ec2/static-web/cat3.png
+
+          systemctl start httpd
+          systemctl enable httpd
           
 
+
+
+
 # Outputs:
+
+
