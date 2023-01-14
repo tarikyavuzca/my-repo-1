@@ -1,0 +1,17 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  This template launches
+  a single EC2 instance.
+Resources:
+  MyEc2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0b5eea76982371e91
+      InstanceType: t2.micro
+      KeyName: firstkey
+      SecurityGroupIds:
+        - NginxWebSerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: First-CloudFormation-Stack-Instance
