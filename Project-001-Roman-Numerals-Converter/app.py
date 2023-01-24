@@ -22,11 +22,11 @@ def main_get():
 # post request to calculate the number and render the result page
 @app.route('/', methods=['POST'])
 def main_post():
-    input1 = request.form['number']
-    if not input1.isdecimal():
+    alpha = request.form['number']
+    if not alpha.isdecimal():
         return render_template('index.html', developer_name='YTD', not_valid=True)
 
-    number = int(input1)
+    number = int(alpha)
     if not 0 < number < 4000:
         return render_template('index.html', developer_name='YTD', not_valid=True)
 
