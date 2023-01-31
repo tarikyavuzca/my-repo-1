@@ -2,14 +2,28 @@
 from flask import Flask, render_template, request
 from flaskext.mysql import MySQL
 
+import boto3
+ssm = boto3.client('ssm')
+
+response = ssm.get_parameter(
+    Name='/clarusway/dbname'
+)
+dbname = response['Parameter']['Value']
+
+response = ssm.get_parameter(
+    Name='/clarusway/password'
+)
+password = response['Parameter']['Value']
+
+
 # Create an object named app
 app = Flask(__name__)
 
 # Configure mysql database
-app.config['MYSQL_DATABASE_HOST'] = 'PLEASE WRITE YOUR DATABASE ENDPOINT HERE'
+app.config['MYSQL_DATABASE_HOST'] = 'email-application.cbanmzptkrzf.us-east-1.rds.amazonaws.com'
 app.config['MYSQL_DATABASE_USER'] = 'admin'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'Clarusway_1'
-app.config['MYSQL_DATABASE_DB'] = 'clarusway'
+app.config['MYSQL_DATABASE_PASSWORD'] = password
+app.config['MYSQL_DATABASE_DB'] = dbname
 app.config['MYSQL_DATABASE_PORT'] = 3306
 mysql = MySQL()
 mysql.init_app(app)
