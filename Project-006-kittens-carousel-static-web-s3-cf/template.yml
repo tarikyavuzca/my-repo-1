@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Build a static website with a CloudFront Distribution
+  
+Parameters:
+
+  pKittensDomainName:
+    Description: Full sub-domain for website
+    Type: String
+
+  pHostedZoneId:
+    Description: Hosted Zone ID for public hosted zone
+    Type: AWS::Route53::HostedZone::Id
+  
+Resources:
+
+  rKittensBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref pKittensDomainName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+  rBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref rKittensBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Id: PublicReadPolicy
+        Statement:
+        - Sid: PublicReadForGetBucketObjects
+          Effect: Allow
+          Principal: "*"
+          Action: s3:GetObject
+          Resource: !Join [ '', [ !GetAtt rKittensBucket.Arn, '/*' ] ]
+
+  rCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref pKittensDomainName
+      DomainValidationOptions:
+      - DomainName: !Ref pKittensDomainName
+        HostedZoneId: !Ref pHostedZoneId
+      ValidationMethod: 'DNS'
+
+  rRoute53Record:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref pHostedZoneId
+      RecordSets:
+      - AliasTarget: 
+          DNSName: !GetAtt rDistribution.DomainName
+          HostedZoneId: Z01197001KS0OZVLUJR4A
+        Name: !Ref pKittensDomainName
+        Type: A
+
+  rDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Origins:
+          - DomainName: !Select [ 2, !Split [ '/', !GetAtt rKittensBucket.WebsiteURL ] ]
+            Id: KittensOrigin
+            CustomOriginConfig: 
+              OriginProtocolPolicy: http-only
+        DefaultCacheBehavior: 
+          AllowedMethods: 
+            - GET
+            - HEAD
+          Compress: true
+          ForwardedValues: 
+            Cookies: 
+              Forward: none
+            QueryString: true
+          TargetOriginId: KittensOrigin
+          ViewerProtocolPolicy: redirect-to-https
+        Aliases: 
+          - !Ref pKittensDomainName
+        ViewerCertificate: 
+          AcmCertificateArn: !Ref rCertificate
+          SslSupportMethod: sni-only
+        HttpVersion: http2
+        Comment: CloudFront pointint to S3 bucket
+        PriceClass: PriceClass_All
+
+#Outputs:
